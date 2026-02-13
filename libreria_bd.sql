@@ -8,14 +8,16 @@ use libreria;
 create table administrador(
 	id int unsigned  primary key  not null auto_increment,
     nombre varchar(40) not null,
-    contraseña varchar(30) not null
+    contraseña varchar(30) not null,
+    permisos_admin boolean
 );
 
 -- tabla comprador
 create table comprador(
 	id int unsigned primary key not null auto_increment,
     nombre varchar(40) not null,
-    contraseña varchar(30) not null
+    contraseña varchar(30) not null,
+    permisos_admin boolean
 );
 
 -- tabla libro

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="org.example.modelo">
+
+    <class name="Libro" table="libro">
+
+        <id name="id" column="id" type="long">
+            <generator class="identity"/>
+        </id>
+
+        <property name="titulo" column="titulo" type="string" not-null="true"/>
+        <property name="descripcion" column="descripcion" type="string" not-null="true"/>
+        <property name="precio" column="precio" type="double" not-null="true"/>
+
+        <!-- Relación N:1 con Administrador -->
+        <many-to-one name="administrador" class="Administrador"
+                     column="id_vendedor" not-null="true"/>
+
+    </class>
+
+</hibernate-mapping>

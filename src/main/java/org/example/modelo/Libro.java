@@ -1,6 +1,7 @@
-package org.example;
+package org.example.modelo;
 
 import lombok.*;
+
 import javax.persistence.*;
 
 @Getter

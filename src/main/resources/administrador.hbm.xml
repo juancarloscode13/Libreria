@@ -15,7 +15,6 @@
         <property name="contraseña" column="contraseña" type="string" not-null="true"/>
         <property name="permisosAdmin" column="permisos_admin" type="boolean" not-null="true"/>
 
-        <!-- Relación 1:N con Libro -->
         <bag name="libros" inverse="true" cascade="all">
             <key column="id_vendedor"/>
             <one-to-many class="Libro"/>

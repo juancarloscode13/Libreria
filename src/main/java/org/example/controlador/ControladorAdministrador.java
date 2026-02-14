@@ -1,6 +1,7 @@
 package org.example.controlador;
 
 import org.example.modelo.Administrador;
+import org.example.modelo.Libro;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;

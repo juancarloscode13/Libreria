@@ -29,9 +29,17 @@ public class ControladorLibro {
         }
     }
 
-    public Libro obtenerPorId(Long id) {
+    public Libro obtenerPorId(int id) {
         try (Session session = sessionFactory.openSession()) {
             return session.get(Libro.class, id);
+        }
+    }
+
+    public List<Libro> obtenerPorAdministrador(int idAdministrador) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM Libro WHERE administrador.id = :idAdministrador", Libro.class)
+                    .setParameter("idAdministrador", idAdministrador)
+                    .list();
         }
     }
 

@@ -7,7 +7,7 @@
 
     <class name="Libro" table="libro">
 
-        <id name="id" column="id" type="long">
+        <id name="id" column="id" type="int">
             <generator class="identity"/>
         </id>
 
@@ -15,7 +15,6 @@
         <property name="descripcion" column="descripcion" type="string" not-null="true"/>
         <property name="precio" column="precio" type="double" not-null="true"/>
 
-        <!-- Relación N:1 con Administrador -->
         <many-to-one name="administrador" class="Administrador"
                      column="id_vendedor" not-null="true"/>
 

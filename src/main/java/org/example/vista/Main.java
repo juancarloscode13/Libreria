@@ -109,11 +109,13 @@ public class Main {
         return 0;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Main aplicacion = new Main();
         aplicacion.cargarDatos();
         Scanner sc = new Scanner(System.in);
         int resultado;
+        Administrador adminLogeado = null;
+        List<Libro> librosAdmin = null;
 
         // Login
         while (true) {
@@ -128,8 +130,10 @@ public class Main {
             resultado = aplicacion.comprobarCredenciales(nombre, contraseña);
 
             if (resultado == 1) {
+                adminLogeado = aplicacion.controladorAdministrador.obtenerPorNombreContraseña(nombre, contraseña);
                 System.out.println("Bienvenido administrador: " + nombre);
                 escribirLog(tipoInfo, "Usuario logeado como administrador.");
+                librosAdmin = aplicacion.controladorLibro.obtenerPorAdministrador(adminLogeado.getId());
                 break;
             } else if (resultado == 2) {
                 System.out.println("Bienvenido comprador: " + nombre);
@@ -141,14 +145,196 @@ public class Main {
             }
         }
 
-        // Menú Admin
+        /*
+         * Menú administrador
+         */
         if (resultado == 1) {
             while (true) {
+                System.out.println("\n¿Sobre qué desea operar?");
+                System.out.println("1. Libros");
+                System.out.println("2. Compradores");
+                System.out.println("0. Salir");
 
+                int caso = sc.nextInt();
+
+                switch (caso) {
+                    //Operar con libros
+                    case 1:
+                        System.out.println("\n¿Qué operación desea realizar sobre libros?");
+                        System.out.println("1. Añadir nuevo");
+                        System.out.println("2. Modificar");
+                        System.out.println("3. Eliminar");
+                        System.out.println("0. Salir");
+
+                        int operacionLibros = sc.nextInt();
+
+                        switch (operacionLibros) {
+                            case 1:
+                                sc.nextLine();
+                                System.out.println("Introduce el título:");
+                                String titulo = sc.nextLine();
+                                System.out.println("Introduce la descripción:");
+                                String descripcion = sc.nextLine();
+                                System.out.println("Introduce el precio:");
+                                double precio = sc.nextDouble();
+
+                                Libro nuevoLibro = new Libro(titulo, descripcion, precio, adminLogeado);
+                                aplicacion.controladorLibro.crear(nuevoLibro);
+                                System.out.println("Libro creado con éxito.");
+                                aplicacion.libros = aplicacion.controladorLibro.obtenerTodos();
+                                escribirLog(tipoInfo, "Libro creado: " + titulo);
+                                break;
+
+                            case 2:
+                                System.out.println("\nSus libros: ");
+                                for (Libro libro : librosAdmin) {
+                                    System.out.println("ID: " + libro.getId() + " - " + libro.getTitulo() + " | Precio: " + libro.getPrecio() + "€");
+                                }
+                                System.out.println("\nIntroduce el ID del libro a modificar:");
+                                int idLibroModificado = sc.nextInt();
+                                sc.nextLine();
+                                Libro libroModificado = aplicacion.controladorLibro.obtenerPorId(idLibroModificado);
+                                if (libroModificado != null) {
+                                    System.out.println("Libro encontrado: " + libroModificado.getTitulo());
+                                    System.out.println("\nNuevo título (Enter para mantener):");
+                                    String tituloLibroModificado = sc.nextLine();
+                                    if (!tituloLibroModificado.isEmpty())
+                                        libroModificado.setTitulo(tituloLibroModificado);
+
+                                    System.out.println("Nueva descripción (Enter para mantener):");
+                                    String descripcionLibroModificado = sc.nextLine();
+                                    if (!descripcionLibroModificado.isEmpty())
+                                        libroModificado.setDescripcion(descripcionLibroModificado);
+
+                                    System.out.println("Nuevo precio (0 para mantener):");
+                                    double precioLibroModificado = sc.nextDouble();
+                                    if (precioLibroModificado > 0) libroModificado.setPrecio(precioLibroModificado);
+
+                                    aplicacion.controladorLibro.actualizar(libroModificado);
+                                    System.out.println("Libro actualizado.");
+                                    aplicacion.libros = aplicacion.controladorLibro.obtenerTodos();
+                                    escribirLog(tipoInfo, "Libro modificado: " + libroModificado.getId());
+                                } else {
+                                    System.out.println("Libro no encontrado.");
+                                }
+                                break;
+
+                            case 3:
+                                System.out.println("\nSus libros: ");
+                                for (Libro libro : librosAdmin) {
+                                    System.out.println("ID: " + libro.getId() + " - " + libro.getTitulo() + " | Precio: " + libro.getPrecio() + "€");
+                                }
+                                System.out.println("Introduce el ID del libro a eliminar:");
+                                int idLibroEliminar = sc.nextInt();
+                                Libro libroEliminar = aplicacion.controladorLibro.obtenerPorId(idLibroEliminar);
+                                if (libroEliminar != null) {
+                                    aplicacion.controladorLibro.eliminar(libroEliminar);
+                                    System.out.println("Libro eliminado.");
+                                    aplicacion.libros = aplicacion.controladorLibro.obtenerTodos();
+                                    escribirLog(tipoInfo, "Libro eliminado: " + idLibroEliminar);
+                                } else {
+                                    System.out.println("Libro no encontrado.");
+                                }
+                                break;
+
+                            case 0:
+                                System.out.println("Volviendo al menú principal...");
+                                break;
+                        }
+                        break;
+
+                    //Operar con compradores
+                    case 2:
+                        System.out.println("\n¿Qué operación desea realizar sobre compradores?");
+                        System.out.println("1. Añadir nuevo");
+                        System.out.println("2. Modificar");
+                        System.out.println("3. Eliminar");
+                        System.out.println("0. Salir");
+
+                        int operacionCompradores = sc.nextInt();
+
+                        switch (operacionCompradores) {
+                            case 1:
+                                sc.nextLine();
+                                System.out.println("\nIntroduce el nombre del comprador:");
+                                String nombreAñadido = sc.nextLine();
+                                System.out.println("Introduce la contraseña:");
+                                String contraseñaAñadido = sc.nextLine();
+
+                                Comprador nuevoComprador = new Comprador(nombreAñadido, contraseñaAñadido, false);
+                                aplicacion.controladorComprador.crear(nuevoComprador);
+                                System.out.println("Comprador creado con éxito.");
+                                aplicacion.compradores = aplicacion.controladorComprador.obtenerTodos();
+                                escribirLog(tipoInfo, "Comprador creado: " + nombreAñadido);
+                                break;
+
+                            case 2:
+                                System.out.println("\nLista de compradores: ");
+                                for (Comprador comprador : aplicacion.compradores) {
+                                    System.out.println(comprador.toString());
+                                }
+
+                                System.out.println("\nIntroduce el ID del comprador a modificar:");
+                                int idCompradorModificado = sc.nextInt();
+                                sc.nextLine();
+                                Comprador compradorModificado = aplicacion.controladorComprador.obtenerPorId(idCompradorModificado);
+                                if (compradorModificado != null) {
+                                    System.out.println("Comprador encontrado: " + compradorModificado.getNombre());
+                                    System.out.println("Nuevo nombre (Enter para mantener):");
+                                    String nombre = sc.nextLine();
+                                    if (!nombre.isEmpty()) compradorModificado.setNombre(nombre);
+
+                                    System.out.println("Nueva contraseña (Enter para mantener):");
+                                    String contraseña = sc.nextLine();
+                                    if (!contraseña.isEmpty()) compradorModificado.setContraseña(contraseña);
+
+                                    aplicacion.controladorComprador.actualizar(compradorModificado);
+                                    System.out.println("Comprador actualizado.");
+                                    aplicacion.compradores = aplicacion.controladorComprador.obtenerTodos();
+                                    escribirLog(tipoInfo, "Comprador modificado: " + idCompradorModificado);
+                                } else {
+                                    System.out.println("Comprador no encontrado.");
+                                }
+                                break;
+
+                            case 3:
+                                System.out.println("\nLista de compradores: ");
+                                for (Comprador comprador : aplicacion.compradores) {
+                                    System.out.println(comprador.toString());
+                                }
+
+                                System.out.println("Introduce el ID del comprador a eliminar:");
+                                int idCompradorEliminado = sc.nextInt();
+                                Comprador compradorEliminado = aplicacion.controladorComprador.obtenerPorId(idCompradorEliminado);
+                                if (compradorEliminado != null) {
+                                    aplicacion.controladorComprador.eliminar(compradorEliminado);
+                                    System.out.println("Comprador eliminado.");
+                                    aplicacion.compradores = aplicacion.controladorComprador.obtenerTodos();
+                                    escribirLog(tipoInfo, "Comprador eliminado: " + idCompradorEliminado);
+                                } else {
+                                    System.out.println("Comprador no encontrado.");
+                                }
+                                break;
+
+                            case 0:
+                                System.out.println("Fin de la ejecución");
+                                escribirLog(tipoInfo, "El administrador finalizó la ejecución");
+                                return;
+
+                        }
+                        break;
+
+                    case 0:
+                        System.out.println("Fin de la ejecución");
+                        escribirLog(tipoInfo, "El administrador finalizó la ejecución");
+                        return;
+                }
             }
         }
 
-        // Menú Comprador
+        /*
+         * Menú de comprador
+         */
         if (resultado == 2) {
             while (true) {
                 System.out.println("\n¿Qué desea hacer?");
@@ -182,7 +368,6 @@ public class Main {
                             }
                         }
                         escribirLog(tipoInfo, "Comprador consultó libros del vendedor con ID: " + idVendedor);
-                        Thread.sleep(2000);
                         break;
 
                     case 2:
@@ -190,7 +375,6 @@ public class Main {
                         System.out.println("\n--- Todos los vendedores y sus libros ---");
                         for (Administrador admin : aplicacion.administradores) {
                             System.out.println("\nVendedor ID: " + admin.getId() + " - " + admin.getNombre());
-                            List<Libro> librosAdmin = aplicacion.controladorLibro.obtenerPorAdministrador(admin.getId());
                             if (librosAdmin.isEmpty()) {
                                 System.out.println("(Sin libros)");
                             } else {
@@ -200,14 +384,13 @@ public class Main {
                             }
                         }
                         escribirLog(tipoInfo, "Comprador consultó todos los vendedores y sus libros.");
-                        Thread.sleep(2000);
                         break;
 
                     case 3:
                         // Mostrar todos los libros
                         System.out.println("\n--- Libros disponibles ---");
                         for (Libro libro : aplicacion.libros) {
-                            System.out.println("ID: " + libro.getId() + " - " + libro.getTitulo() + " | Precio: "+ libro.getPrecio() + "€");
+                            System.out.println("ID: " + libro.getId() + " - " + libro.getTitulo() + " | Precio: " + libro.getPrecio() + "€");
                         }
 
                         // El usuario selecciona un libro por ID
@@ -223,7 +406,6 @@ public class Main {
                             System.out.println("No se ha encontrado un libro con ese ID.");
                             escribirLog(tipoAviso, "Comprador intentó comprar un libro con ID inexistente: " + idLibro);
                         }
-                        Thread.sleep(2000);
                         break;
 
                     case 0:
@@ -231,7 +413,6 @@ public class Main {
                         escribirLog(tipoInfo, "El usuario salió.");
                         return;
                 }
-
             }
         }
     }

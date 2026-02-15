@@ -37,9 +37,7 @@ public class ControladorLibro {
 
     public List<Libro> obtenerPorAdministrador(int idAdministrador) {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery("FROM Libro WHERE administrador.id = :idAdministrador", Libro.class)
-                    .setParameter("idAdministrador", idAdministrador)
-                    .list();
+            return session.createQuery("FROM Libro WHERE administrador.id = :idAdministrador", Libro.class).setParameter("idAdministrador", idAdministrador).list();
         }
     }
 

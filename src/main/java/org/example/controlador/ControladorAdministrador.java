@@ -36,6 +36,12 @@ public class ControladorAdministrador {
         }
     }
 
+    public Administrador obtenerPorNombreContraseña(String nombre, String contraseña) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM Administrador WHERE nombre = :nombre AND contraseña = :contraseña", Administrador.class).setParameter("nombre", nombre).setParameter("contraseña", contraseña).getSingleResult();
+        }
+    }
+
     public List<Administrador> obtenerTodos() {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("FROM Administrador", Administrador.class).list();
